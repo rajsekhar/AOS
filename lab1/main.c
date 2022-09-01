@@ -1,5 +1,8 @@
 
-// main function
+/*
+    main.c
+*/
+
 #include "mymalloc.h"
 
 int main (int argc, char **argv) {
