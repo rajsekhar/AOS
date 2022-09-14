@@ -6,6 +6,8 @@
 
 node_t *g_head = NULL;
 
+void mergeFreeList ();
+
 void *mymalloc (size_t size) {
 
     if (g_head == NULL) {
@@ -26,7 +28,7 @@ void *mymalloc (size_t size) {
 
                 size_t sz = ptrCrnt->size;
 
-                ptrNewMem = ptrCrnt;
+                ptrNewMem = ptrCrnt; 
                 ptrNewMem->size = sizeof(header_t) + size;
                 ptrCrnt = (void*)ptrCrnt + size + sizeof(header_t);
                 ptrCrnt->size = sz - (size + sizeof(header_t));
@@ -51,18 +53,23 @@ void *mymalloc (size_t size) {
 
 void myfree (void *ptr) {
 
-    header_t *hprt = (header_t*)ptr - sizeof(header_t);
+    // not required ading extra check to avoid seg fault
+    if (ptr == NULL) {
+        fprintf(stderr, "got the null pointer" );
+        return;
+    }
+
+    header_t *hprt = (header_t*)ptr - 1;
     assert(hprt->magic == 1234567);
+    // we got the free block
     node_t *ptrFreeBlk = (void*)hprt;
 
     node_t *ptrHead = g_head,
             *ptrPrv = NULL;
 
+    // insert free block in respective location
     while (ptrHead != NULL) {
-        // check next availabe
-        // if (merge(ptrCrnt, ptrHead, ptrPrv)) {
-        //     break;
-        // } else 
+
         if (ptrFreeBlk > ptrHead) {
             ptrPrv = ptrHead;
             ptrHead = ptrHead->next;
@@ -77,7 +84,9 @@ void myfree (void *ptr) {
             break;
         }
     }
+    // check and megre the free list, if adjacent block is free
     mergeFreeList ();
+    // set pointer to null
     ptr = NULL;
 }
 
@@ -110,26 +119,3 @@ node_t *initMemory () {
     head->next = NULL;
     return head;
 }
-
-/*
-// not using
-bool merge (node_t *ptrCrnt, node_t *ptrHead, node_t *ptrPrv) {
-            
-    bool merge = false;
-    // check next availabe
-    if (((void*)ptrCrnt+ptrCrnt->size) == ptrHead) {
-                
-        ptrCrnt->size = ptrCrnt->size + ptrHead->size;
-        if (ptrPrv != NULL) {
-            ptrPrv->next = ptrCrnt;
-                    ptrCrnt->next = ptrHead->next;
-        } else {
-            ptrCrnt->next = ptrHead->next;
-            g_head = ptrCrnt;
-        }
-        merge = true;
-    }
-    return merge;
-}
-
-*/

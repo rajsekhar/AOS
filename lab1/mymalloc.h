@@ -3,7 +3,7 @@
 */
 
 #ifndef _MYMALLOC_H
-#define _MYMALLOC_H        1
+#define _MYMALLOC_H     1
 
 #include <stdio.h>
 #include <stddef.h>
@@ -28,9 +28,5 @@ void *mymalloc (size_t size);
 void myfree (void *ptr);
 
 node_t *initMemory ();
-
-void mergeFreeList ();
-
-bool merge (node_t *ptrCrnt, node_t *ptrHead, node_t *ptrPrv);
 
 #endif
